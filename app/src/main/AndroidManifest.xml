@@ -16,7 +16,7 @@
             android:name=".DangNhapActivity"
             android:exported="false" />
         <activity
-            android:name=".ChaoActivity"
+            android:name=".WelcomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
