@@ -2,15 +2,24 @@ package com.example.asm_mob2041_ph32936.Fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -19,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +44,8 @@ import com.example.asm_mob2041_ph32936.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -72,9 +84,12 @@ public class SachFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+    private MenuItem menuItem;
+    private SearchView searchView ;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -82,8 +97,11 @@ public class SachFragment extends Fragment {
         }
     }
 
+
+
     RecyclerView rcv_sach;
     ArrayList<Sach> lstSach;
+    ArrayList<Sach> tempLstSach;
     ArrayList<LoaiSach> lstLS;
 
     FloatingActionButton btn_add;
@@ -97,15 +115,24 @@ public class SachFragment extends Fragment {
 
     Dialog dialog;
     Spinner spinner_loaiSach;
-    EditText edt_maSach,edt_tenSach,edt_giaThue,edt_namXuatBan;
+    EditText edt_maSach,edt_tenSach,edt_giaThue,edt_namXuatBan , edSearch;
+
+    Button btnTang , btnGiam ;
+
     int maLoaiSach = 0;
     int getPosition;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_sach, container, false);
+        edSearch = view.findViewById(R.id.edSearch);
+
+        btnTang = view.findViewById(R.id.btnTang);
+        btnGiam = view.findViewById(R.id.btnGiam);
 
         sach = new Sach();
         lstSach = new ArrayList<>();
@@ -116,12 +143,54 @@ public class SachFragment extends Fragment {
         loaiSach = new LoaiSach();
 
         lstLS = (ArrayList<LoaiSach>) loaiSachDAO.getAll();
-
+        tempLstSach = (ArrayList<Sach>) sachDAO.getAll();
         initUI(view);
         fillRCV();
         btnAdd();
+
+        edSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                lstSach.clear();
+                for (Sach sach : tempLstSach){
+                    if(sach.getTenSach().toLowerCase().contains(s.toString().toLowerCase())){
+                        lstSach.add(sach);
+                    }
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        btnTang.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tangDan();
+            }
+        });
+
+        btnGiam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                giamDan();
+            }
+        });
+
         return view;
     }
+
+
+
 
     private void btnAdd() {
         btn_add.setOnClickListener(new View.OnClickListener() {
@@ -284,5 +353,45 @@ public class SachFragment extends Fragment {
         rcv_sach = view.findViewById(R.id.rcv_sach);
 
         btn_add = view.findViewById(R.id.btn_add);
+    }
+
+    private void giamDan (){
+        Collections.sort(lstSach, new Comparator<Sach>() {
+            @Override
+            public int compare(Sach o1, Sach o2) {
+                if (o1.getMaSach() > o2.getMaSach()){
+                    return -1;
+
+                }else if (o1.getMaSach() < o2.getMaSach()){
+                    return 1;
+
+                }else {
+                    return 0 ;
+                }
+
+            }
+        });
+
+        adapter.notifyDataSetChanged();
+    }
+
+    private void tangDan (){
+        Collections.sort(lstSach, new Comparator<Sach>() {
+            @Override
+            public int compare(Sach o1, Sach o2) {
+                if (o1.getMaSach() < o2.getMaSach()){
+                    return -1;
+
+                }else if (o1.getMaSach() > o2.getMaSach()){
+                    return 1;
+
+                }else {
+                    return 0 ;
+                }
+
+            }
+        });
+
+        adapter.notifyDataSetChanged();
     }
 }

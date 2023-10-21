@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -14,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     DrawerLayout drawerLayout_home;
     NavigationView navigationView_home;
+    SearchView searchView;
     String[] title = {"Quản lý Phiếu mượn",
             "Quản lý Loại sách",
             "Quản lý Sách",
@@ -84,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
         showInf();
     }
 
+
+
     private void showInf() {
         ThuThuDAO thuThuDAO = new ThuThuDAO(MainActivity.this);
         Intent intent = getIntent();
@@ -101,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView_home.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
                 if(item.getItemId() == R.id.manageLoanSlips) {
                     toolbar.setTitle(title[0]);
                     if (mCurrentFragment != FRAGMENT_PHIEUMUON) {

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -16,16 +18,19 @@ import com.example.asm_mob2041_ph32936.Model.LoaiSach;
 import com.example.asm_mob2041_ph32936.Model.Sach;
 import com.example.asm_mob2041_ph32936.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class SachAdapter extends RecyclerView.Adapter<SachAdapter.ViewHolder> {
+public class SachAdapter extends RecyclerView.Adapter<SachAdapter.ViewHolder> implements Filterable {
     private Context context;
     private List<Sach> lstSach;
+    private List<Sach> lstSachOld;
     IClickItemRCV clickItemRCV;
     public SachAdapter(Context context, List<Sach> lstSach,IClickItemRCV itemRCV) {
         this.context = context;
         this.lstSach = lstSach;
         this.clickItemRCV = itemRCV;
+        this.lstSachOld = lstSach;
     }
 
     @NonNull
@@ -66,6 +71,8 @@ public class SachAdapter extends RecyclerView.Adapter<SachAdapter.ViewHolder> {
         return lstSach != null ? lstSach.size():0;
     }
 
+
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView tv_maSach,tv_tenSach,tv_giaThue,tv_tenLoai,tv_namxuatban;
         ImageButton btn_delete;
@@ -78,5 +85,39 @@ public class SachAdapter extends RecyclerView.Adapter<SachAdapter.ViewHolder> {
             tv_namxuatban = itemView.findViewById(R.id.tv_namxuatban);
             btn_delete = itemView.findViewById(R.id.btn_delete);
         }
+    }
+
+
+    @Override
+    public Filter getFilter() {
+
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String strSearch = constraint.toString();
+                if(strSearch.isEmpty()){
+                    lstSach = lstSachOld;
+                }else {
+                    List<Sach> list = new ArrayList<>();
+                    for(Sach sach : lstSachOld){
+                        if (sach.getTenSach() .toLowerCase().contains(strSearch.toLowerCase())){
+                            list.add(sach);
+                        }
+                    }
+
+                    lstSach = list ;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values= lstSach;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                lstSach = (List<Sach>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 }
